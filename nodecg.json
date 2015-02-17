@@ -6,7 +6,7 @@
     "authors": [
         "Alex Van Camp <email@alexvan.camp>"
     ],
-    "description": "Lets other bundles easily query the Twitch API on behalf of any logged in user.",
+    "description": "Lets other bundles easily query the Twitch API on behalf of a logged in user.",
     "license": "MIT",
     "extension": {
         "express": true,

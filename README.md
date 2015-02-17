@@ -1,7 +1,7 @@
 # lfg-twitchapi
 This is a [NodeCG](http://github.com/nodecg/nodecg) bundle.
 
-Lets other bundles easily query the Twitch API on behalf of any logged in user.
+Lets other bundles easily query the Twitch API on behalf of a logged in user.
 Requires Twitch authentication to be enabled in your NodeCG installation.
 
 ## Installation
@@ -49,14 +49,14 @@ twitchApi('GET', '/channels/{{username}}/subscriptions', { limit: 25, direction:
 
 ## API
 ### apiCall(method, path, options, callback)
-Makes a call to the twitch API, invoking `callback` with the response.
+Makes a call to the Twitch API, invoking `callback` with the response.
 
 If `{{username}}` is present in `path`, it will be replaced with the value of `nodecg.bundleConfig.username`.
 
 * `method` is a HTTP method; ex: `GET` or `PUT`
 * `path` is the desired endpoint; ex: `/channels/{{username}}/subscriptions`
 * `options` is an object of query parameters; ex: `{ limit: 25, direction: 'desc' }`
-* `callback` will be invoked with the response from the Twitch api
+* `callback` will be invoked with the response from the Twitch API
 
 ### License
 lfg-sublistener is provided under the MIT license, which is available to read in the [LICENSE][] file.
