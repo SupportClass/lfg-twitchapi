@@ -8,12 +8,20 @@ var app = require('express')();
 module.exports = function (extensionApi) {
     nodecg = extensionApi;
 
+    if (!nodecg.config.login.enabled) {
+        throw new Error('Login security is not enabled, lfg-twitchapi will not load.');
+    }
+
+    if (!nodecg.config.login.twitch.enabled) {
+        throw new Error('Twitch authentication is not enabled, lfg-twitchapi will not load.');
+    }
+
     if (!Object.keys(nodecg.bundleConfig).length) {
-        throw new Error('[lfg-twitchapi] No config found in cfg/lfg-twitch.json, aborting!');
+        throw new Error('No config found in cfg/lfg-twitch.json, aborting!');
     }
 
     if (!nodecg.bundleConfig.username) {
-        throw new Error('[lfg-twitchapi] "username" key not present in cfg/lfg-twitch.json, aborting!');
+        throw new Error('"username" key not present in cfg/lfg-twitch.json, aborting!');
     }
 
     // Non-confidential session details are made available to dashboard & view
