@@ -1,0 +1,1 @@
+$.get('/lfg-twitchapi/checkuser');
