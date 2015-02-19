@@ -66,8 +66,10 @@ module.exports = function (extensionApi) {
         res.sendStatus(200);
     });
 
+    nodecg.mount(app);
+
     // Return the function used to make API calls, so other bundles can use it
-    return app;
+    return apiCall;
 };
 
 function apiCall(method, path, options, callback) {

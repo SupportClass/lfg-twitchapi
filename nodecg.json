@@ -1,7 +1,7 @@
 {
     "name": "lfg-twitchapi",
     "version": "0.0.1",
-    "nodecgDependency": "~0.4.0",
+    "nodecgDependency": "~0.5.0",
     "homepage": "http://alexvan.camp/",
     "authors": [
         "Alex Van Camp <email@alexvan.camp>"
@@ -9,7 +9,6 @@
     "description": "Lets other bundles easily query the Twitch API on behalf of a logged in user.",
     "license": "MIT",
     "extension": {
-        "express": true,
         "path": "extension.js"
     }
 }
