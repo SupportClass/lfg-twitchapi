@@ -22,7 +22,7 @@ Then, add `lfg-twitchapi` as a `bundleDependency` in your bundle's [`nodecg.json
 
 Now, add the following code to your bundle's extension:
 ```javascript
-var twitchApi = nodecg.extensions['lfg-twitchapi'].apiCall;
+var twitchApi = nodecg.extensions['lfg-twitchapi'];
 
 // Gets the 25 most recent subs
 // {{username}} will be automatically replaced by the username specified in lfg-twitchapi.json
