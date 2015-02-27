@@ -16,9 +16,9 @@ Requires Twitch authentication to be enabled in your NodeCG installation.
 ```
 
 ## Usage
-First, Ensure that your NodeCG installation is using Twitch authentication.
+First, ensure that your NodeCG installation is using Twitch authentication. See the [NodeCG configuration docs](http://nodecg.com/starter/configuration.html) for details.
 
-Then, add `lfg-twitchapi` as a `bundleDependency` in your bundle's [`nodecg.json`](https://github.com/nodecg/nodecg/wiki/nodecg.json)
+Then, add `lfg-twitchapi` as a `bundleDependency` in your bundle's [`nodecg.json`](http://nodecg.com/guide/nodecg.json.html)
 
 Now, add the following code to your bundle's extension:
 ```javascript
