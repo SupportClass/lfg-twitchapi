@@ -48,7 +48,7 @@ twitchApi('GET', '/channels/{{username}}/subscriptions', { limit: 25, direction:
 ```
 
 ## API
-### apiCall(method, path, options, callback)
+### twitchApi(method, path, options, callback)
 Makes a call to the Twitch API, invoking `callback` with the response.
 
 If `{{username}}` is present in `path`, it will be replaced with the value of `nodecg.bundleConfig.username`.
