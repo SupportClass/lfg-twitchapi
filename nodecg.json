@@ -1,7 +1,7 @@
 {
     "name": "lfg-twitchapi",
-    "version": "0.0.1",
-    "nodecgDependency": "~0.5.1",
+    "version": "0.0.2",
+    "nodecgDependency": "~0.5.4",
     "homepage": "http://alexvan.camp/",
     "authors": [
         "Alex Van Camp <email@alexvan.camp>"

@@ -72,7 +72,40 @@ module.exports = function (extensionApi) {
     nodecg.mount(app);
 
     // Return the function used to make API calls, so other bundles can use it
-    return apiCall;
+    return {
+        get: function(path, options, callback) {
+            apiCall('GET', path, options, callback);
+        },
+        post: function(path, options, callback) {
+            apiCall('POST', path, options, callback);
+        },
+        put: function(path, options, callback) {
+            apiCall('PUT', path, options, callback);
+        },
+        delete: function(path, options, callback) {
+            apiCall('DELETE', path, options, callback);
+        },
+        destroySession: function() {
+            nodecg.util.findSession({
+                'data.passport.user.provider': 'twitch',
+                'data.passport.user.username': nodecg.bundleConfig.username
+            }, function(err, session) {
+                if (err) {
+                    nodecg.log.error(err.stack);
+                    return;
+                }
+
+                // If we successfully found the session, populate nodecg.variables.session
+                if (session) {
+                    nodecg.util.destroySession(session.sid, function(err) {
+                        if (err) { nodecg.log.error(err.stack); }
+                    });
+                } else {
+                    nodecg.log.warn('Couldn\'t destroy non-existent session for "%s"', nodecg.bundleConfig.username);
+                }
+            });
+        }
+    };
 };
 
 function apiCall(method, path, options, callback) {
@@ -96,8 +129,8 @@ function apiCall(method, path, options, callback) {
     if (requestOptions.url.indexOf('{{username}}') >= 0) {
         // If we don't have an active session, error
         if (!_session) {
-            return callback(new Error('Session for ' + nodecg.bundleConfig.username + ' has not been captured yet.' +
-                '\nOnce they log in to the dashboard, this error will stop.'));
+            return callback(new Error('Session for "' + nodecg.bundleConfig.username + '" has not been captured yet.' +
+                ' Once they log in to the dashboard, this error will stop.'));
         }
         requestOptions.url = requestOptions.url.replace('{{username}}', nodecg.bundleConfig.username);
     }
