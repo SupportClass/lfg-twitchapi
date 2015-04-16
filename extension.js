@@ -48,7 +48,7 @@ module.exports = function (extensionApi) {
     // If our target user logs out, we can't do anything else until they log back in
     loginLib.on('logout', function(session) {
         var user = session.passport.user;
-        if (user.provider === 'twitch' && user.username === nodecg.bundleConfig.username) {
+        if (user && user.provider === 'twitch' && user.username === nodecg.bundleConfig.username) {
             sessionReplicant.value = null;
             accessToken = null;
             _session = null;
