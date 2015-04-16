@@ -1,0 +1,15 @@
+.sessionInactive
+    h5 Waiting for "#{bundleConfig.username}" to sign in...
+
+.sessionActive
+    .details
+        img.details-logo.img-thumbnail
+        .details-user
+            .small Using Twitch API as:
+            h5 #{bundleConfig.username}
+
+    .btn-group.btn-group-justified
+        .btn-group
+            a(href="/logout")
+                button.ctrl-reconnect.btn.btn-xs.btn-primary(type="button" title="Problems? Sign out and back in.")
+                    | Sign out
