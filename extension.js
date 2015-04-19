@@ -4,7 +4,6 @@ var nodecg, accessToken, _session;
 var request = require('request');
 var querystring = require('querystring');
 var app = require('express')();
-var loginLib = require('../../lib/login');
 
 module.exports = function (extensionApi) {
     nodecg = extensionApi;
@@ -24,6 +23,8 @@ module.exports = function (extensionApi) {
     if (!nodecg.bundleConfig.username) {
         throw new Error('"username" key not present in cfg/lfg-twitch.json, aborting!');
     }
+
+    var loginLib = require('../../lib/login');
 
     // Non-confidential session details are made available to dashboard & view
     var sessionReplicant = nodecg.Replicant('session', { defaultValue: null, persistent: false });
