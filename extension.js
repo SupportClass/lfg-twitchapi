@@ -110,6 +110,10 @@ module.exports = function (extensionApi) {
 };
 
 function apiCall(method, path, options, callback) {
+    if (typeof callback === 'undefined' && typeof options === 'function') {
+        callback = options;
+        options = {};
+    }
     method = typeof method !== 'undefined' ? method : 'GET';
     path = typeof path === 'string' ? path : '';
     options = typeof options !== 'undefined' ? options : {};
