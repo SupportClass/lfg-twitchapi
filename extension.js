@@ -1,6 +1,6 @@
 'use strict';
 
-var nodecg, _session;
+var nodecg, accessToken, _session;
 var request = require('request');
 var querystring = require('querystring');
 var app = require('express')();
@@ -24,30 +24,35 @@ module.exports = function (extensionApi) {
         throw new Error('"username" key not present in cfg/lfg-twitch.json, aborting!');
     }
 
+    var loginLib = require('../../lib/login');
+
     // Non-confidential session details are made available to dashboard & view
-    nodecg.declareSyncedVar({ name: 'session', initialVal: {} });
+    var sessionReplicant = nodecg.Replicant('session', { defaultValue: null, persistent: false });
 
-    // On startup, check to see if the desired session already exists in the database
-    nodecg.util.findSession({
-        'data.passport.user.provider': 'twitch',
-        'data.passport.user.username': nodecg.bundleConfig.username
-    }, function(err, session) {
-        if (err) {
-            nodecg.log.error(err.stack);
-            return;
-        }
-
-        // If we successfully found the session, populate nodecg.variables.session
-        if (session) {
-            _session = session.data; // store globally for use later
-            var user = _session.passport.user;
-            nodecg.variables.session = {
+    // Capture the relevant session data the moment our user logs in
+    loginLib.on('login', function(session) {
+        var user = session.passport.user;
+        _session = session;
+        if (user.provider === 'twitch' && user.username === nodecg.bundleConfig.username) {
+            // Update the 'session' syncedVar with only the non-confidential information
+            sessionReplicant.value = {
                 provider: user.provider, // should ALWAYS be 'twitch'
                 username: user.username,
                 displayName: user.displayName,
                 logo: user._json.logo,
                 url: user._json._links.self
             };
+            accessToken = user.accessToken;
+        }
+    });
+
+    // If our target user logs out, we can't do anything else until they log back in
+    loginLib.on('logout', function(session) {
+        var user = session.passport.user;
+        if (user.provider === 'twitch' && user.username === nodecg.bundleConfig.username) {
+            sessionReplicant.value = null;
+            accessToken = null;
+            _session = null;
         }
     });
 
@@ -56,13 +61,14 @@ module.exports = function (extensionApi) {
             var user = req.session.passport.user;
             if (user.username === nodecg.bundleConfig.username) {
                 // Update the 'session' syncedVar with only the non-confidential information
-                nodecg.variables.session = {
+                sessionReplicant.value = {
                     provider: user.provider, // should ALWAYS be 'twitch'
                     username: user.username,
                     displayName: user.displayName,
                     logo: user._json.logo,
                     url: user._json._links.self
                 };
+                accessToken = user.accessToken;
                 _session = req.session;
             }
         }
@@ -86,29 +92,28 @@ module.exports = function (extensionApi) {
             apiCall('DELETE', path, options, callback);
         },
         destroySession: function() {
-            nodecg.util.findSession({
-                'data.passport.user.provider': 'twitch',
-                'data.passport.user.username': nodecg.bundleConfig.username
-            }, function(err, session) {
-                if (err) {
-                    nodecg.log.error(err.stack);
-                    return;
-                }
-
-                // If we successfully found the session, populate nodecg.variables.session
-                if (session) {
-                    nodecg.util.destroySession(session.sid, function(err) {
-                        if (err) { nodecg.log.error(err.stack); }
-                    });
-                } else {
-                    nodecg.log.warn('Couldn\'t destroy non-existent session for "%s"', nodecg.bundleConfig.username);
-                }
-            });
+            if (_session) {
+                _session.destroy(function(err) {
+                    if (err) {
+                        nodecg.log.error(err.stack);
+                    } else {
+                        var username = _session.passport.user.displayName;
+                        sessionReplicant.value = null;
+                        accessToken = null;
+                        _session = null;
+                        nodecg.sendMessage('destroyed', username);
+                    }
+                });
+            }
         }
     };
 };
 
 function apiCall(method, path, options, callback) {
+    if (typeof callback === 'undefined' && typeof options === 'function') {
+        callback = options;
+        options = {};
+    }
     method = typeof method !== 'undefined' ? method : 'GET';
     path = typeof path === 'string' ? path : '';
     options = typeof options !== 'undefined' ? options : {};
@@ -128,16 +133,16 @@ function apiCall(method, path, options, callback) {
     // If {{username}} is present in the url string, replace it with the username from bundleConfig
     if (requestOptions.url.indexOf('{{username}}') >= 0) {
         // If we don't have an active session, error
-        if (!_session) {
-            return callback(new Error('Session for "' + nodecg.bundleConfig.username + '" has not been captured yet.' +
-                ' Once they log in to the dashboard, this error will stop.'));
+        if (!accessToken) {
+            return callback(new Error('Access token for "' + nodecg.bundleConfig.username + '" has not been captured yet.' +
+                ' Once they sign in, this error will stop.'));
         }
         requestOptions.url = requestOptions.url.replace('{{username}}', nodecg.bundleConfig.username);
     }
 
 
-    if (_session) {
-        requestOptions.headers.Authorization = 'OAuth ' + _session.passport.user.accessToken;
+    if (accessToken) {
+        requestOptions.headers.Authorization = 'OAuth ' + accessToken;
     }
 
     request(requestOptions, function (error, response, body) {
