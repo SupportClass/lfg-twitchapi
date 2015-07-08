@@ -61,5 +61,5 @@ If `{{username}}` is present in `path`, it will be replaced with the value of `n
 * `callback` will be invoked with the response from the Twitch API
 
 ### License
-lfg-sublistener is provided under the MIT license, which is available to read in the [LICENSE][] file.
+lfg-twitchapi is provided under the MIT license, which is available to read in the [LICENSE][] file.
 [license]: LICENSE
