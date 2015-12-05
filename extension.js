@@ -80,16 +80,16 @@ module.exports = function (extensionApi) {
     // Return the function used to make API calls, so other bundles can use it
     return {
         get: function(path, options, callback) {
-            apiCall('GET', path, options, callback);
+            apiCall('GET', path, options, {}, callback);
         },
-        post: function(path, options, callback) {
-            apiCall('POST', path, options, callback);
+        post: function(path, options, data, callback) {
+            apiCall('POST', path, options, {}, callback);
         },
-        put: function(path, options, callback) {
-            apiCall('PUT', path, options, callback);
+        put: function(path, options, data, callback) {
+            apiCall('PUT', path, options, data, callback);
         },
         delete: function(path, options, callback) {
-            apiCall('DELETE', path, options, callback);
+            apiCall('DELETE', path, options, {}, callback);
         },
         destroySession: function() {
             if (_session) {
@@ -109,7 +109,7 @@ module.exports = function (extensionApi) {
     };
 };
 
-function apiCall(method, path, options, callback) {
+function apiCall(method, path, options, data, callback) {
     if (typeof callback === 'undefined' && typeof options === 'function') {
         callback = options;
         options = {};
@@ -117,7 +117,8 @@ function apiCall(method, path, options, callback) {
     method = typeof method !== 'undefined' ? method : 'GET';
     path = typeof path === 'string' ? path : '';
     options = typeof options !== 'undefined' ? options : {};
-    callback = typeof callback === 'function' ? callback : function () {};
+    data = typeof data !== 'undefined' ? data : {};
+    callback = typeof callback === 'function' ? callback : function() {};
 
     options = querystring.stringify(options);
 
@@ -127,7 +128,8 @@ function apiCall(method, path, options, callback) {
             'Accept': 'application/vnd.twitchtv.v3+json',
             'Client-ID': nodecg.config.login.twitch.clientID
         },
-        method: method
+        method: method,
+        form: data
     };
 
     // If {{username}} is present in the url string, replace it with the username from bundleConfig
