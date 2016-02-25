@@ -1,3 +1,13 @@
+<a name="0.1.1"></a>
+## [0.1.1](https://github.com/SupportClass/lfg-twitchapi/compare/v0.1.0...v0.1.1) (2016-02-25)
+
+
+### Bug Fixes
+
+* **deps:** add bower.json ([f68ce17](https://github.com/SupportClass/lfg-twitchapi/commit/f68ce17))
+
+
+
 <a name="0.1.0"></a>
 # 0.1.0 (2016-02-25)
 
