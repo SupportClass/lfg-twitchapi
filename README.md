@@ -1,7 +1,7 @@
 # lfg-twitchapi
 This is a [NodeCG](http://github.com/nodecg/nodecg) bundle.
 
-Lets other bundles easily query the Twitch API on behalf of a logged in user.
+Lets other bundles easily query the [Twitch API](https://github.com/justintv/Twitch-API) on behalf of a logged in user.
 Requires Twitch authentication to be enabled in your NodeCG installation.
 
 ## Installation
