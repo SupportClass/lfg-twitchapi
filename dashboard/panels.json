@@ -1,9 +1,0 @@
-[
-  {
-    "name": "status",
-    "title": "Twitch API Status",
-    "width": 2,
-    "file": "panel.jade",
-    "faIcon": "fa-twitch"
-  }
-]

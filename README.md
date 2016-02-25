@@ -21,12 +21,12 @@ First, ensure that your NodeCG installation is using Twitch authentication. See 
 Then, add `lfg-twitchapi` as a `bundleDependency` in your bundle's [`nodecg.json`](http://nodecg.com/guide/nodecg.json.html)
 
 Now, add the following code to your bundle's extension:
-```javascript
+```js
 var twitchApi = nodecg.extensions['lfg-twitchapi'];
 
 // Gets the 25 most recent subs
 // {{username}} will be automatically replaced by the username specified in lfg-twitchapi.json
-twitchApi.get('/channels/{{username}}/subscriptions', { limit: 25, direction: 'desc' },
+twitchApi.get('/channels/{{username}}/subscriptions', {limit: 25, direction: 'desc'},
     function(err, code, body) {
         if (err) {
             nodecg.log.error(err);
@@ -57,7 +57,7 @@ Makes a call to the Twitch API, invoking `callback` with the response.
 If `{{username}}` is present in `path`, it will be replaced with the value of `nodecg.bundleConfig.username`.
 
 * `path` is the desired endpoint; ex: `/channels/{{username}}/subscriptions`
-* `options` is an object of query parameters; ex: `{ limit: 25, direction: 'desc' }`
+* `options` is an object of query parameters; ex: `{limit: 25, direction: 'desc'}`
 * `callback` will be invoked with the response from the Twitch API
 
 ### License

@@ -1,0 +1,36 @@
+{
+  "name": "lfg-twitchapi",
+  "version": "0.1.0",
+  "description": "Lets other bundles easily query the Twitch API on behalf of a logged in user.",
+  "homepage": "http://supportclass.net/",
+  "author": {
+    "name": "Alex Van Camp",
+    "email": "email@alexvan.camp",
+    "url": "http://alexvan.camp"
+  },
+  "files": [
+    "dashboard",
+    "graphics",
+    "extension.js",
+    "extension"
+  ],
+  "keywords": [
+    "twitch",
+    "api",
+    "nodecg-bundle"
+  ],
+  "nodecg": {
+    "compatibleRange": "~0.7.0",
+    "dashboardPanels": [
+      {
+        "name": "status",
+        "title": "Twitch API Status",
+        "width": 2,
+        "file": "status.html",
+        "headerColor": "#564573"
+      }
+    ]
+  },
+  "repository": "https://lange@github.com/SupportClass/lfg-twitchapi.git",
+  "license": "MIT"
+}

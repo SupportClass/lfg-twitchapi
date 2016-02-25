@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<link rel="import" href="components/iron-flex-layout/iron-flex-layout.html">
+	<link rel="import" href="components/iron-image/iron-image.html">
+	<link rel="import" href="components/iron-pages/iron-pages.html">
+	<link rel="import" href="components/nodecg-toast/nodecg-toast.html">
+	<link rel="import" href="components/paper-styles/shadow.html">
+	<style is="custom-style">
+		#active {
+			@apply(--layout-horizontal);
+		}
+
+		#inactive {
+			@apply(--layout-horizontal);
+			@apply(--layout-center-justified);
+			@apply(--layout-center);
+			height: 70px;
+		}
+
+		#avatar {
+			@apply(--layout-flex-none);
+			@apply(--shadow-elevation-6dp);
+			width: 70px;
+			height: 70px;
+			background-color: lightgray;
+		}
+
+		#userDetails {
+			@apply(--layout-flex);
+			text-align: center;
+			align-self: center;
+		}
+
+		.username {
+			font-weight: bold;
+		}
+	</style>
+</head>
+<body>
+	<nodecg-toast></nodecg-toast>
+
+	<iron-pages selected="inactive" attr-for-selected="id">
+		<div id="inactive">
+			Waiting for&nbsp;<span class="username"></span>&nbsp;to sign in...
+		</div>
+		<div id="active">
+			<iron-image id="avatar" sizing="contain" preload fade></iron-image>
+			<div id="userDetails">
+				<div>Using Twitch API as:</div>
+				<span class="username"></span>
+			</div>
+		</div>
+	</iron-pages>
+
+	<script src="status.js"></script>
+</body>
+</html>

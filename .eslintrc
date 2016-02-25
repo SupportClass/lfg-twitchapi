@@ -1,0 +1,10 @@
+{
+	"root": true,
+	"extends": "xo/browser",
+	"globals": {
+		"nodecg": true
+	},
+	"rules": {
+		"new-cap": 0
+	}
+}
