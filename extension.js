@@ -1,12 +1,10 @@
-/* eslint-env node */
 'use strict';
 
-var request = require('request');
-var querystring = require('querystring');
-var app = require('express')();
-var nodecg;
-var accessToken;
-var _session;
+const request = require('request-promise');
+const app = require('express')();
+let nodecg;
+let accessToken;
+let _session;
 
 module.exports = function (extensionApi) {
 	nodecg = extensionApi;
@@ -23,17 +21,17 @@ module.exports = function (extensionApi) {
 		throw new Error('No config found in cfg/lfg-twitch.json, aborting!');
 	}
 
-	var loginLib = require('../../lib/login');
+	const loginLib = require('../../lib/login');
 
 	// Non-confidential session details are made available to dashboard & view
-	var sessionReplicant = nodecg.Replicant('session', {defaultValue: null, persistent: false});
+	const sessionReplicant = nodecg.Replicant('session', {defaultValue: null, persistent: false});
 
 	// Capture the relevant session data the moment our user logs in
-	loginLib.on('login', function (session) {
-		var user = session.passport.user;
+	loginLib.on('login', session => {
+		const user = session.passport.user;
 		_session = session;
 		if (user.provider === 'twitch' && user.username === nodecg.bundleConfig.username) {
-			// Update the 'session' syncedVar with only the non-confidential information
+			// Update the 'session' syncedconst with only the non-confidential information
 			sessionReplicant.value = {
 				provider: user.provider, // should ALWAYS be 'twitch'
 				username: user.username,
@@ -46,8 +44,8 @@ module.exports = function (extensionApi) {
 	});
 
 	// If our target user logs out, we can't do anything else until they log back in
-	loginLib.on('logout', function (session) {
-		var user = session.passport.user;
+	loginLib.on('logout', session => {
+		const user = session.passport.user;
 		if (user.provider === 'twitch' && user.username === nodecg.bundleConfig.username) {
 			sessionReplicant.value = null;
 			accessToken = null;
@@ -55,9 +53,9 @@ module.exports = function (extensionApi) {
 		}
 	});
 
-	app.get('/lfg-twitchapi/checkuser', function (req, res) {
+	app.get('/lfg-twitchapi/checkuser', (req, res) => {
 		if (req.session.passport && req.session.passport.user) {
-			var user = req.session.passport.user;
+			const user = req.session.passport.user;
 			if (user.username === nodecg.bundleConfig.username) {
 				// Update the 'session' Replicant with only the non-confidential information
 				sessionReplicant.value = {
@@ -78,25 +76,25 @@ module.exports = function (extensionApi) {
 
 	// Return the function used to make API calls, so other bundles can use it
 	return {
-		get: function (path, options, callback) {
-			apiCall('GET', path, options, {}, callback);
+		get(path, qs, body) {
+			return apiCall('GET', path, qs, body);
 		},
-		post: function (path, options, data, callback) {
-			apiCall('POST', path, options, {}, callback);
+		post(path, qs, body) {
+			return apiCall('POST', path, qs, body);
 		},
-		put: function (path, options, data, callback) {
-			apiCall('PUT', path, options, data, callback);
+		put(path, qs, body) {
+			return apiCall('PUT', path, qs, body);
 		},
-		delete: function (path, options, callback) {
-			apiCall('DELETE', path, options, {}, callback);
+		delete(path, qs, body) {
+			return apiCall('DELETE', path, qs, body);
 		},
-		destroySession: function () {
+		destroySession() {
 			if (_session) {
-				_session.destroy(function (err) {
+				_session.destroy(err => {
 					if (err) {
 						nodecg.log.error(err.stack);
 					} else {
-						var username = _session.passport.user.displayName;
+						const username = _session.passport.user.displayName;
 						sessionReplicant.value = null;
 						accessToken = null;
 						_session = null;
@@ -108,58 +106,39 @@ module.exports = function (extensionApi) {
 	};
 };
 
-function apiCall(method, path, options, data, callback) {
-	if (typeof callback === 'undefined' && typeof options === 'function') {
-		callback = options;
-		options = {};
-	}
-
-	method = typeof method === 'undefined' ? 'GET' : method;
-	path = typeof path === 'string' ? path : '';
-	options = typeof options === 'undefined' ? {} : options;
-	data = typeof data === 'undefined' ? {} : data;
-	callback = typeof callback === 'function' ? callback : function () {
-	};
-
-	options = querystring.stringify(options);
-
-	var requestOptions = {
-		url: 'https://api.twitch.tv/kraken' + path + (options ? '?' + options : ''),
+function apiCall(method = 'GET', path = '', qs = {}, body = {}) {
+	const requestOptions = {
+		method,
+		url: `https://api.twitch.tv/kraken${path}`,
 		headers: {
 			'Accept': 'application/vnd.twitchtv.v3+json',
+			'content-type': 'application/json',
 			'Client-ID': nodecg.config.login.twitch.clientID
 		},
-		method: method,
-		form: data
+		qs,
+		body,
+		json: true,
+		resolveWithFullResponse: true,
+		simple: false
 	};
 
 	// If {{username}} is present in the url string, replace it with the username from bundleConfig
 	if (requestOptions.url.indexOf('{{username}}') >= 0) {
 		// If we don't have an active session, error
 		if (!accessToken) {
-			return callback(new Error('Access token for "' + nodecg.bundleConfig.username + '" has not been captured yet.' +
-				' Once they sign in, this error will stop.'));
+			return new Promise((resolve, reject) => {
+				process.nextTick(() => {
+					reject(`Access token for "${nodecg.bundleConfig.username}" has not been captured yet.` +
+						' Once they sign in, this error will stop.');
+				});
+			});
 		}
 		requestOptions.url = requestOptions.url.replace('{{username}}', nodecg.bundleConfig.username);
 	}
 
 	if (accessToken) {
-		requestOptions.headers.Authorization = 'OAuth ' + accessToken;
+		requestOptions.headers.Authorization = `OAuth ${accessToken}`;
 	}
 
-	request(requestOptions, function (error, response, body) {
-		if (error) {
-			return callback(error);
-		}
-
-		try {
-			body = JSON.parse(body);
-		} catch (error) {
-			return callback(error);
-		}
-
-		body.channel = nodecg.bundleConfig.username;
-
-		return callback(null, response.statusCode, body);
-	});
+	return request(requestOptions);
 }
