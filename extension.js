@@ -102,7 +102,8 @@ module.exports = function (extensionApi) {
 					}
 				});
 			}
-		}
+		},
+		channel: nodecg.bundleConfig.username
 	};
 };
 
