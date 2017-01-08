@@ -19,7 +19,7 @@
 			pages.selected = 'active';
 			avatar.src = newVal.logo;
 
-			if (typeof oldVal === 'object' && Object.keys(oldVal).length === 0) {
+			if (oldVal && typeof oldVal === 'object' && Object.keys(oldVal).length === 0) {
 				toast.text = `[lfg-twitchapi] ${newVal.username} has signed in.`;
 				toast.show();
 			}
