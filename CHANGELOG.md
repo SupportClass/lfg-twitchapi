@@ -1,3 +1,18 @@
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/SupportClass/lfg-twitchapi/compare/v1.0.0...v2.0.0) (2017-09-04)
+
+
+### Code Refactoring
+
+* port to NodeCG v0.9 ([06b64bc](https://github.com/SupportClass/lfg-twitchapi/commit/06b64bc))
+
+
+### BREAKING CHANGES
+
+* No longer supports NodeCG v0.8
+
+
+
 <a name="1.0.0"></a>
 # [1.0.0](https://github.com/SupportClass/lfg-twitchapi/compare/v0.1.1...v1.0.0) (2016-06-01)
 
